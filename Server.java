@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class server {
+public class Server {
     // initialize socket and input streams
     private Socket socket = null;
     private ServerSocket server = null;
@@ -15,19 +15,15 @@ public class server {
     private DataOutputStream out = null;
 
     // constructor with port
-    public server(int port) {
-
-
+    public Server(int port) {
 
         // Get the directories of the joke files
         // Directory was: "C:/Users/Nash/IdeaProjects/CIS 4912 Networking/src/Joke1.txt"
-        String Joke1_File = "src/Joke1.txt";
-        String Joke2_File = "src/Joke2.txt";
-        String Joke3_File = "src/Joke3.txt";
+        String Joke1_File = "NF_PA1/Joke1.txt";
+        String Joke2_File = "NF_PA1/Joke2.txt";
+        String Joke3_File = "NF_PA1/Joke3.txt";
 
-
-
-       // starts server and waits for a connection
+        // starts server and waits for a connection
         try {
             server = new ServerSocket(port);
             System.out.println("Server started");
@@ -35,28 +31,30 @@ public class server {
             System.out.println("Waiting for a client ...");
 
             socket = server.accept();
-            System.out.println("Client accepted");
 
             // takes input from the client socket
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-
             // takes input in from the client
             out = new DataOutputStream(socket.getOutputStream());
 
+            System.out.println("Client connected");
+
             String line = "";
 
+            // doesnt work not sure why: out.writeUTF("Hello!");
+
             // reads client messages until "bye" is sent
-            while (!line.equals("STOP")) {
-                //Sets the actual joke stings from the txt files into variables
+            while (!line.equals("bye")) {
+                // Sets the actual joke stings from the txt files into variables
                 BufferedReader reader = new BufferedReader(new FileReader(Joke1_File));
-                String  Joke1 = reader.readLine();
+                String Joke1 = reader.readLine();
                 reader = new BufferedReader(new FileReader(Joke2_File));
                 String Joke2 = reader.readLine();
                 reader = new BufferedReader(new FileReader(Joke3_File));
                 String Joke3 = reader.readLine();
                 reader.close();
 
-                //Receives user input and sends corresponding joke based on what user inputs
+                // Receives user input and sends corresponding joke based on what user inputs
                 try {
                     line = in.readUTF();
 
@@ -70,8 +68,7 @@ public class server {
                         System.out.print("Request for Joke 3 Received: Sending Joke3.txt ...\n");
                         out.writeUTF(Joke3);
                     } else if (line.equals("bye")) {
-                        //If the user types in break, the server input loop breaks and will then type "disconnected."
-                        //out.writeUTF("disconnected.\n");
+                        out.writeUTF("disconnected");
                         break;
                     } else {
                         out.writeUTF("Invalid Request. Please try again");
@@ -81,7 +78,6 @@ public class server {
                     System.out.println(i);
                 }
             }
-            System.out.println("disconnected");
 
             // close connection
             socket.close();
@@ -92,8 +88,7 @@ public class server {
     }
 
     public static void main(String args[]) {
-        // int port = Integer.valueOf(args[0]);
         int port = 4010;
-        server server = new server(port);
+        Server server = new Server(port);
     }
 }
