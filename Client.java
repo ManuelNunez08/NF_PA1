@@ -26,7 +26,7 @@ public class Client {
             // takes input from the server socket
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 
-        } catch (UnknownHostException u) {
+        } catch(UnknownHostException u) {
 
             System.out.println(u);
             return;
@@ -71,6 +71,6 @@ public class Client {
 
     public static void main(String args[]) {
         int port = 4010;
-        Client client = new Client("127.0.0.1", port);
+        Client client = new Client("128.227.1.24", port);
     }
 }
