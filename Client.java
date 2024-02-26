@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client {
+public class client {
     // initialize socket and input output streams
     private Socket socket = null;
     private DataInputStream input = null;
@@ -13,11 +13,11 @@ public class Client {
     private DataOutputStream out = null;
 
     // constructor to put ip address and port
-    public Client(String address, int port) {
+    public client(String address, int port) {
         // establish a connection
         try {
             socket = new Socket(address, port);
-            System.out.println("Connected");
+            System.out.println("Hello!");
 
             // takes input from terminal
             input = new DataInputStream(System.in);
@@ -42,8 +42,8 @@ public class Client {
         String line = "";
         String joke = "";
 
-        // keep reading until "Over" is input
-        while (!line.equals("STOP")) {
+        // keep reading until "bye" is input
+        while (!line.equals("bye")) {
             try {
                 line = input.readLine();
                 out.writeUTF(line);
@@ -52,9 +52,10 @@ public class Client {
                 System.out.println(joke);
 
             } catch (IOException i) {
-                System.out.println(i);
+                //System.out.println(i);
             }
         }
+        System.out.println("exit");
 
         // close the connection
         try {
@@ -69,6 +70,6 @@ public class Client {
     public static void main(String args[]) {
         // int port = Integer.valueOf(args[0]);
         int port = 4010;
-        Client client = new Client("127.0.0.1", port);
+        client client = new client("127.0.0.1", port);
     }
 }
