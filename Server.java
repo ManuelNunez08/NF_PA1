@@ -4,91 +4,93 @@ import java.io.FileReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    // initialize socket and input streams
-    private Socket socket = null;
-    private ServerSocket server = null;
-    private DataInputStream in = null;
-    private DataOutputStream out = null;
+    // Initialize server socket and client connection
+    private Socket clientSocket = null;
+    private ServerSocket jokeServer = null;
+    private DataInputStream clientInput = null;
+    private DataOutputStream clientOutput = null;
 
-    // constructor with port
+    // Constructor with server port
     public Server(int port) {
+        // Joke files location
+        String Joke1Path = "Joke1.txt";
+        String Joke2Path = "Joke2.txt";
+        String Joke3Path = "Joke3.txt";
 
-        // Get the directories of the joke files
-        // Directory was: "C:/Users/Nash/IdeaProjects/CIS 4912 Networking/src/Joke1.txt"
-        String Joke1_File = "Joke1.txt";
-        String Joke2_File = "Joke2.txt";
-        String Joke3_File = "Joke3.txt";
-
-        // starts server and waits for a connection
+        // Start server and wait for a connection
         try {
-            server = new ServerSocket(port);
-            System.out.println("Server started");
+            jokeServer = new ServerSocket(port);
+            System.out.println("JokeServer started");
 
             System.out.println("Waiting for a client ...");
 
-            socket = server.accept();
+            clientSocket = jokeServer.accept();
 
-            // takes input from the client socket
-            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            // takes input in from the client
-            out = new DataOutputStream(socket.getOutputStream());
+            // Input from client
+            clientInput = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+            // Output to client
+            clientOutput = new DataOutputStream(clientSocket.getOutputStream());
 
             System.out.println("Client connected");
 
-            String line = "";
-            out.writeUTF("Hello!");
+            String command = "";
+            clientOutput.writeUTF("Welcome! Type 'Joke 1', 'Joke 2', or 'Joke 3' to get a joke; type 'bye' to exit.");
 
-            // reads client messages until "bye" is sent
-            while (!line.equals("bye")) {
-                // Sets the actual joke stings from the txt files into variables
-                BufferedReader reader = new BufferedReader(new FileReader(Joke1_File));
-                String Joke1 = reader.readLine();
-                reader = new BufferedReader(new FileReader(Joke2_File));
-                String Joke2 = reader.readLine();
-                reader = new BufferedReader(new FileReader(Joke3_File));
-                String Joke3 = reader.readLine();
-                reader.close();
-
-                // Receives user input and sends corresponding joke based on what user inputs
+            // Process commands from client
+            while (!command.equals("bye")) {
                 try {
-                    line = in.readUTF();
+                    // Read jokes from files
+                    BufferedReader jokeReader = new BufferedReader(new FileReader(Joke1Path));
+                    String joke1 = jokeReader.readLine();
+                    jokeReader = new BufferedReader(new FileReader(Joke2Path));
+                    String joke2 = jokeReader.readLine();
+                    jokeReader = new BufferedReader(new FileReader(Joke3Path));
+                    String joke3 = jokeReader.readLine();
+                    jokeReader.close();
 
-                    if (line.equals("Joke 1")) {
-                        System.out.print("Request for Joke 1 Received: Sending Joke1.txt ...\n");
-                        out.writeUTF(Joke1);
-                    } else if (line.equals("Joke 2")) {
-                        System.out.print("Request for Joke 2 Received: Sending Joke2.txt ...\n");
-                        out.writeUTF(Joke2);
-                    } else if (line.equals("Joke 3")) {
-                        System.out.print("Request for Joke 3 Received: Sending Joke3.txt ...\n");
-                        out.writeUTF(Joke3);
-                    } else if (line.equals("bye")) {
-                        out.writeUTF("disconnected");
-                        break;
-                    } else {
-                        out.writeUTF("Invalid Request. Please try again");
+                    // Handle client requests
+                    command = clientInput.readUTF();
+
+                    switch (command) {
+                        case "Joke 1":
+                            System.out.println("Sending Joke 1...");
+                            clientOutput.writeUTF(joke1);
+                            break;
+                        case "Joke 2":
+                            System.out.println("Sending Joke 2...");
+                            clientOutput.writeUTF(joke2);
+                            break;
+                        case "Joke 3":
+                            System.out.println("Sending Joke 3...");
+                            clientOutput.writeUTF(joke3);
+                            break;
+                        case "bye":
+                            clientOutput.writeUTF("Goodbye!");
+                            break;
+                        default:
+                            clientOutput.writeUTF("Invalid command. Please try 'Joke 1', 'Joke 2', 'Joke 3', or 'bye'.");
+                            break;
                     }
-
-                } catch (IOException i) {
-                    System.out.println(i);
+                } catch (IOException e) {
+                    System.out.println(e);
                 }
             }
 
-            // close connection
-            socket.close();
-            in.close();
-        } catch (IOException i) {
-            System.out.println(i);
+            // Close resources
+            clientSocket.close();
+            clientInput.close();
+            clientOutput.close();
+        } catch (IOException e) {
+            System.out.println(e);
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         int port = 4010;
-        Server server = new Server(port);
+        new Server(port);
     }
 }

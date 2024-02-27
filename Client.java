@@ -6,27 +6,28 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Client {
-    // initialize socket and input output streams
-    private Socket socket = null;
-    private DataInputStream input = null;
-    private DataInputStream in = null;
-    private DataOutputStream out = null;
+    // Initialize socket and input/output streams
+    private Socket connectionSocket = null;
+    private DataInputStream consoleInput = null;
+    private DataInputStream serverInput = null;
+    private DataOutputStream serverOutput = null;
 
-    // constructor to put ip address and port
-    public Client(String address, int port) {
-        // establish a connection
+    // Constructor with server address and port
+    public Client(String serverAddress, int serverPort) {
+        // Attempt to establish a connection
         try {
-            socket = new Socket(address, port);
+            connectionSocket = new Socket(serverAddress, serverPort);
 
-            // takes input from terminal
-            input = new DataInputStream(System.in);
+            // Input from terminal
+            consoleInput = new DataInputStream(System.in);
 
-            // sends output to the socket
-            out = new DataOutputStream(socket.getOutputStream());
-            // takes input from the server socket
-            in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+            // Output to the server
+            serverOutput = new DataOutputStream(connectionSocket.getOutputStream());
 
-        } catch(UnknownHostException u) {
+            // Input from the server
+            serverInput = new DataInputStream(new BufferedInputStream(connectionSocket.getInputStream()));
+
+        } catch (UnknownHostException u) {
             System.out.println(u);
             return;
         } catch (IOException i) {
@@ -34,51 +35,49 @@ public class Client {
             return;
         }
 
-        // string to read message from input
-        String line = "";
-        String msg = "";
-        String hi = "";
-
+        // Initial message from server
+        String welcomeMessage = "";
         try {
-            hi = in.readUTF();
-            System.out.println(hi);
+            welcomeMessage = serverInput.readUTF();
+            System.out.println(welcomeMessage);
         } catch (IOException i) {
             System.out.println(i);
             return;
         }
 
+        // Communication variables
+        String userInput = "";
+        String serverResponse = "";
 
-        // keep reading until "bye" is input
-        while (!msg.equals("disconnected")) {
+        // Continue communication until "disconnected" is received
+        while (!serverResponse.equals("disconnected")) {
             try {
-                line = input.readLine();
-                
-                if (!msg.equals("disconnected")){
-                    out.writeUTF(line);
-                    msg = in.readUTF();
-                    System.out.println(msg);
-                }
+                userInput = consoleInput.readLine();
 
+                if (!serverResponse.equals("disconnected")) {
+                    serverOutput.writeUTF(userInput);
+                    serverResponse = serverInput.readUTF();
+                    System.out.println(serverResponse);
+                }
 
             } catch (IOException i) {
                 System.out.println(i);
             }
         }
-        System.out.println("exit");
+        System.out.println("Connection terminated.");
 
-
-        // close the connection
+        // Close all connections
         try {
-            input.close();
-            out.close();
-            socket.close();
+            consoleInput.close();
+            serverOutput.close();
+            connectionSocket.close();
         } catch (IOException i) {
             System.out.println(i);
         }
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         int port = 4010;
-        Client client = new Client("127.0.0.1", port);
+        new Client("127.0.0.1", port);
     }
 }
