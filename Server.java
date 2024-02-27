@@ -20,13 +20,13 @@ public class Server {
 
         // Get the directories of the joke files
         // Directory was: "C:/Users/Nash/IdeaProjects/CIS 4912 Networking/src/Joke1.txt"
-        String Joke1_File = "NF_PA1/Joke1.txt";
-        String Joke2_File = "NF_PA1/Joke2.txt";
-        String Joke3_File = "NF_PA1/Joke3.txt";
+        String Joke1_File = "Joke1.txt";
+        String Joke2_File = "Joke2.txt";
+        String Joke3_File = "Joke3.txt";
 
         // starts server and waits for a connection
         try {
-            server = new ServerSocket(port, 0, InetAddress.getByName("0.0.0.0"));
+            server = new ServerSocket(port);
             System.out.println("Server started");
 
             System.out.println("Waiting for a client ...");
@@ -41,8 +41,7 @@ public class Server {
             System.out.println("Client connected");
 
             String line = "";
-
-            // doesnt work not sure why: out.writeUTF("Hello!");
+            out.writeUTF("Hello!");
 
             // reads client messages until "bye" is sent
             while (!line.equals("bye")) {

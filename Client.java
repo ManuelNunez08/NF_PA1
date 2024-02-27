@@ -27,7 +27,6 @@ public class Client {
             in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
 
         } catch(UnknownHostException u) {
-
             System.out.println(u);
             return;
         } catch (IOException i) {
@@ -38,6 +37,15 @@ public class Client {
         // string to read message from input
         String line = "";
         String msg = "";
+        String hi = "";
+
+        try {
+            hi = in.readUTF();
+            System.out.println(hi);
+        } catch (IOException i) {
+            System.out.println(i);
+            return;
+        }
 
 
         // keep reading until "bye" is input
@@ -71,6 +79,6 @@ public class Client {
 
     public static void main(String args[]) {
         int port = 4010;
-        Client client = new Client("128.227.1.24", port);
+        Client client = new Client("127.0.0.1", port);
     }
 }
