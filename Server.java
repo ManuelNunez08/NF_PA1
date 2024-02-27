@@ -38,7 +38,7 @@ public class Server {
             System.out.println("Client connected");
 
             String command = "";
-            clientOutput.writeUTF("Welcome! Type 'Joke 1', 'Joke 2', or 'Joke 3' to get a joke; type 'bye' to exit.");
+            clientOutput.writeUTF("Hello! Type 'Joke 1', 'Joke 2', or 'Joke 3' to get a joke; type 'bye' to exit.");
 
             // Process commands from client
             while (!command.equals("bye")) {
@@ -69,7 +69,7 @@ public class Server {
                             clientOutput.writeUTF(joke3);
                             break;
                         case "bye":
-                            clientOutput.writeUTF("Goodbye!");
+                            clientOutput.writeUTF("disconnected");
                             break;
                         default:
                             clientOutput.writeUTF("Invalid command. Please try 'Joke 1', 'Joke 2', 'Joke 3', or 'bye'.");

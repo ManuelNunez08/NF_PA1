@@ -64,7 +64,7 @@ public class Client {
                 System.out.println(i);
             }
         }
-        System.out.println("Connection terminated.");
+        System.out.println("exit.");
 
         // Close all connections
         try {
