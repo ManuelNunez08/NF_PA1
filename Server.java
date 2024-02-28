@@ -62,6 +62,7 @@ public class Server {
                             break;
                         case "bye":
                             System.out.println("Disconnected");
+                            clientOutput.writeUTF("exit");
                             break;
                         default:
                             clientOutput.writeUTF("Invalid command. Please try 'Joke 1', 'Joke 2', 'Joke 3', or 'bye'.");

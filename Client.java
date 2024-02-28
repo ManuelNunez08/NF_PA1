@@ -50,11 +50,11 @@ public class Client {
         String serverResponse = "";
 
         // Continue communication until "disconnected" is received
-        while (!serverResponse.equals("disconnected")) {
+        while (!serverResponse.equals("exit")) {
             try {
                 userInput = consoleInput.readLine();
 
-                if (!serverResponse.equals("disconnected")) {
+                if (!serverResponse.equals("exit")) {
                     serverOutput.writeUTF(userInput);
                     serverResponse = serverInput.readUTF();
                     System.out.println(serverResponse);
@@ -64,7 +64,6 @@ public class Client {
                 System.out.println(i);
             }
         }
-        System.out.println("exit.");
 
         // Close all connections
         try {
