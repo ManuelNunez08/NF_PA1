@@ -8,42 +8,35 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    // Initialize server socket and client connection
     private Socket clientSocket = null;
     private ServerSocket jokeServer = null;
     private DataInputStream clientInput = null;
     private DataOutputStream clientOutput = null;
 
-    // Constructor with server port
     public Server(int port) {
-        // Joke files location
         String Joke1Path = "Joke1.txt";
         String Joke2Path = "Joke2.txt";
         String Joke3Path = "Joke3.txt";
 
-        // Start server and wait for a connection
         try {
             jokeServer = new ServerSocket(port);
-            System.out.println("JokeServer started");
+            System.out.println("Server started");
 
             System.out.println("Waiting for a client ...");
-
             clientSocket = jokeServer.accept();
 
-            // Input from client
-            clientInput = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
-            // Output to client
-            clientOutput = new DataOutputStream(clientSocket.getOutputStream());
+            // Capture client's IP and print connection message
+            String clientIP = clientSocket.getInetAddress().getHostAddress();
+            System.out.println("Client connection requested from " + clientIP);
 
-            System.out.println("Client connected");
+            clientInput = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+            clientOutput = new DataOutputStream(clientSocket.getOutputStream());
 
             String command = "";
             clientOutput.writeUTF("Hello! Type 'Joke 1', 'Joke 2', or 'Joke 3' to get a joke; type 'bye' to exit.");
 
-            // Process commands from client
             while (!command.equals("bye")) {
                 try {
-                    // Read jokes from files
                     BufferedReader jokeReader = new BufferedReader(new FileReader(Joke1Path));
                     String joke1 = jokeReader.readLine();
                     jokeReader = new BufferedReader(new FileReader(Joke2Path));
@@ -52,7 +45,6 @@ public class Server {
                     String joke3 = jokeReader.readLine();
                     jokeReader.close();
 
-                    // Handle client requests
                     command = clientInput.readUTF();
 
                     switch (command) {
@@ -69,7 +61,7 @@ public class Server {
                             clientOutput.writeUTF(joke3);
                             break;
                         case "bye":
-                            clientOutput.writeUTF("disconnected");
+                            System.out.println("Disconnected");
                             break;
                         default:
                             clientOutput.writeUTF("Invalid command. Please try 'Joke 1', 'Joke 2', 'Joke 3', or 'bye'.");
@@ -80,7 +72,6 @@ public class Server {
                 }
             }
 
-            // Close resources
             clientSocket.close();
             clientInput.close();
             clientOutput.close();
