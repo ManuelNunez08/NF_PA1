@@ -6,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 public class server_TCP {
     // Initialize server socket and client connection
@@ -37,49 +39,36 @@ public class server_TCP {
 
             System.out.println("Client connected");
 
-            String command = "";
-            clientOutput.writeUTF("Hello! Type 'Joke 1', 'Joke 2', or 'Joke 3' to get a joke; type 'bye' to exit.");
+            String fileName = "";
 
             // Process commands from client
-            while (!command.equals("bye")) {
+            while (true) {
                 try {
-                    // Read jokes from files
-                    BufferedReader jokeReader = new BufferedReader(new FileReader(Joke1Path));
-                    String joke1 = jokeReader.readLine();
-                    jokeReader = new BufferedReader(new FileReader(Joke2Path));
-                    String joke2 = jokeReader.readLine();
-                    jokeReader = new BufferedReader(new FileReader(Joke3Path));
-                    String joke3 = jokeReader.readLine();
-                    jokeReader.close();
 
                     // Handle client requests
-                    command = clientInput.readUTF();
-
-                    switch (command) {
-                        case "Joke 1":
-                            System.out.println("Sending Joke 1...");
-                            clientOutput.writeUTF(joke1);
-                            break;
-                        case "Joke 2":
-                            System.out.println("Sending Joke 2...");
-                            clientOutput.writeUTF(joke2);
-                            break;
-                        case "Joke 3":
-                            System.out.println("Sending Joke 3...");
-                            clientOutput.writeUTF(joke3);
-                            break;
-                        case "bye":
-                            clientOutput.writeUTF("disconnected");
-                            break;
-                        default:
-                            clientOutput
-                                    .writeUTF("Invalid command. Please try 'Joke 1', 'Joke 2', 'Joke 3', or 'bye'.");
-                            break;
+                    fileName = clientInput.readUTF();
+                    if (fileName.equals("bye")) {
+                        break;
                     }
+
+                    File file = new File("jokes/" + fileName);
+                    clientOutput.writeLong(file.length());
+
+                    try (FileInputStream fis = new FileInputStream(file)) {
+                        byte[] buffer = new byte[4096];
+                        int bytesRead;
+                        while ((bytesRead = fis.read(buffer)) != -1) {
+                            clientOutput.write(buffer, 0, bytesRead);
+                        }
+                         System.out.println(fileName + " sent.");
+                    }
+
                 } catch (IOException e) {
                     System.out.println(e);
                 }
             }
+
+            System.out.println("Client Disconnected.");
 
             // Close resources
             clientSocket.close();
@@ -89,6 +78,8 @@ public class server_TCP {
             System.out.println(e);
         }
     }
+
+
 
     public static void main(String[] args) {
 
