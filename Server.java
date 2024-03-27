@@ -1,13 +1,13 @@
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 
-public class Server {
+public class server {
     // Initialize server socket and client connection
     private Socket clientSocket = null;
     private ServerSocket jokeServer = null;
@@ -15,7 +15,7 @@ public class Server {
     private DataOutputStream clientOutput = null;
 
     // Constructor with server port
-    public Server(int port) {
+    public server(int port) {
         // Joke files location
         String Joke1Path = "Joke1.txt";
         String Joke2Path = "Joke2.txt";
@@ -72,7 +72,8 @@ public class Server {
                             clientOutput.writeUTF("disconnected");
                             break;
                         default:
-                            clientOutput.writeUTF("Invalid command. Please try 'Joke 1', 'Joke 2', 'Joke 3', or 'bye'.");
+                            clientOutput
+                                    .writeUTF("Invalid command. Please try 'Joke 1', 'Joke 2', 'Joke 3', or 'bye'.");
                             break;
                     }
                 } catch (IOException e) {
@@ -90,7 +91,12 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        int port = 4010;
-        new Server(port);
+
+        if (args.length != 1) {
+            System.out.println("Please provide valid initilization arguments.");
+        } else {
+            int port = Integer.valueOf(args[0]);
+            new server(port);
+        }
     }
 }

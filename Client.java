@@ -1,11 +1,11 @@
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
-public class Client {
+public class client {
     // Initialize socket and input/output streams
     private Socket connectionSocket = null;
     private DataInputStream consoleInput = null;
@@ -13,7 +13,7 @@ public class Client {
     private DataOutputStream serverOutput = null;
 
     // Constructor with server address and port
-    public Client(String serverAddress, int serverPort) {
+    public client(String serverAddress, int serverPort) {
         // Attempt to establish a connection
         try {
             connectionSocket = new Socket(serverAddress, serverPort);
@@ -77,7 +77,14 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        int port = 4010;
-        new Client("127.0.0.1", port);
+        if (args.length != 2) {
+            System.out.println("Please provide valid initilization arguments.");
+        } else {
+            int port = Integer.valueOf(args[0]);
+            //For local comms, IP = 127.0.0.1
+            String IP = args[1];
+            new client(IP, port);
+            
+        }
     }
 }
