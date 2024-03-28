@@ -2,8 +2,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -18,10 +16,6 @@ public class server_TCP {
 
     // Constructor with server port
     public server_TCP(int port) {
-        // Joke files location
-        String Joke1Path = "Joke1.txt";
-        String Joke2Path = "Joke2.txt";
-        String Joke3Path = "Joke3.txt";
 
         // Start server and wait for a connection
         try {
@@ -51,8 +45,12 @@ public class server_TCP {
                         break;
                     }
 
+                    // Start Timer
+                    long start = System.currentTimeMillis();
                     File file = new File("jokes/" + fileName);
                     clientOutput.writeLong(file.length());
+                    // END TIMER
+                    long result = System.currentTimeMillis() - start;
 
                     try (FileInputStream fis = new FileInputStream(file)) {
                         byte[] buffer = new byte[4096];
@@ -60,7 +58,7 @@ public class server_TCP {
                         while ((bytesRead = fis.read(buffer)) != -1) {
                             clientOutput.write(buffer, 0, bytesRead);
                         }
-                         System.out.println(fileName + " sent.");
+                        System.out.println(fileName + " sent --- elapsed time: " + result + "ms");
                     }
 
                 } catch (IOException e) {
@@ -79,15 +77,18 @@ public class server_TCP {
         }
     }
 
-
-
     public static void main(String[] args) {
-
         if (args.length != 1) {
             System.out.println("Please provide valid initilization arguments.");
         } else {
             int port = Integer.valueOf(args[0]);
-            new server_TCP(port);
+            for (int i = 0; i < 10; i++) {
+                System.out.println(
+                        "-------------------------------------------------------------------------------\nAttempt: "
+                                + (i + 1));
+                new server_TCP(port);
+                port = port + 1;
+            }
         }
     }
 }
